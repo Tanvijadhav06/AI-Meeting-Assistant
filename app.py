@@ -44,18 +44,13 @@ model, sentiment_model = load_models()
 if "chat" not in st.session_state:
     st.session_state.chat = []
 
-if "summary" not in st.session_state:
-    st.session_state.summary = ""
-
-if "tasks" not in st.session_state:
-    st.session_state.tasks = []
-
 # ---------- FUNCTIONS ----------
 def clean_text(text):
     return text.replace("→", "-")
 
 def summarize(text):
-    res = model(f"Summarize meeting with tasks:\n{text}", max_length=150, do_sample=False)
+    prompt = f"Summarize the following meeting clearly with tasks:\n{text}"
+    res = model(prompt, max_length=150, do_sample=False)
     return res[0]["generated_text"]
 
 def extract_tasks(text):
@@ -70,7 +65,7 @@ def detect_priority(task):
     t = task.lower()
     if any(k in t for k in ["urgent","critical","blocker"]):
         return "high"
-    elif any(k in t for k in ["pending","important","delay"]):
+    elif any(k in t for k in ["pending","important","delay","priority"]):
         return "medium"
     return "low"
 
@@ -82,7 +77,8 @@ def highlight_line(text, question):
     return ""
 
 def chat_answer(text, q):
-    res = model(f"Answer from meeting:\n{text}\nQuestion:{q}", max_length=120, do_sample=False)
+    prompt = f"Answer based only on the meeting:\n{text}\nQuestion:{q}"
+    res = model(prompt, max_length=120, do_sample=False)
     return res[0]["generated_text"]
 
 def create_pdf(summary, tasks, sentiment, email):
@@ -114,9 +110,6 @@ if st.button("Generate Insights"):
     summary = clean_text(summarize(transcript))
     tasks = [clean_text(t) for t in extract_tasks(transcript)]
     sentiment = sentiment_model(summary[:512])[0]["label"]
-
-    st.session_state.summary = summary
-    st.session_state.tasks = tasks
 
     col1, col2 = st.columns(2)
 
@@ -180,7 +173,7 @@ for msg in st.session_state.chat:
         if msg.get("highlight"):
             st.markdown(f'<div class="highlight">{msg["highlight"]}</div>', unsafe_allow_html=True)
 
-q = st.text_input("Ask question", key="chat_input")
+q = st.text_input("Ask question")
 
 col1, col2 = st.columns(2)
 
