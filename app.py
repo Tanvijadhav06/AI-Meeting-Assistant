@@ -34,7 +34,7 @@ st.title("AI Meeting Assistant")
 # ---------- MODELS ----------
 @st.cache_resource
 def load_models():
-    model = pipeline("text2text-generation", model="google/flan-t5-base")
+    model = pipeline("text-generation", model="google/flan-t5-small")
     sentiment = pipeline("sentiment-analysis")
     return model, sentiment
 
@@ -49,7 +49,7 @@ def clean_text(text):
     return text.replace("→", "-")
 
 def summarize(text):
-    prompt = f"Summarize the following meeting clearly with tasks:\n{text}"
+    prompt = f"Summarize the following meeting:\n{text}"
     res = model(prompt, max_length=150, do_sample=False)
     return res[0]["generated_text"]
 
@@ -77,7 +77,7 @@ def highlight_line(text, question):
     return ""
 
 def chat_answer(text, q):
-    prompt = f"Answer based only on the meeting:\n{text}\nQuestion:{q}"
+    prompt = f"Answer based on meeting:\n{text}\nQuestion:{q}"
     res = model(prompt, max_length=120, do_sample=False)
     return res[0]["generated_text"]
 
