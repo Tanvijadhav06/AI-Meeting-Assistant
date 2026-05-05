@@ -19,11 +19,6 @@ Tech Stack
 - Hugging Face Transformers (FLAN-T5)
 - FPDF
 
-Run the Application
-
-```bash
-pip install -r requirements.txt
-python -m streamlit run app.py
 
 Overview
 
