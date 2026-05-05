@@ -24,3 +24,11 @@ Run the Application
 ```bash
 pip install -r requirements.txt
 python -m streamlit run app.py
+
+Overview
+
+This project demonstrates the use of transformer-based NLP models to process unstructured meeting transcripts and generate meaningful insights in a structured format.
+
+Author
+
+Tanvi Jadhav
